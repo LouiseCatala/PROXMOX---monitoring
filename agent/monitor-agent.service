@@ -1,0 +1,13 @@
+[Unit]
+Description=The SIS Ubuntu resource monitoring agent
+After=network.target
+
+[Service]
+User=byron
+WorkingDirectory=/home/byron/monitor-agent
+ExecStart=/home/byron/monitor-agent/.venv/bin/python /home/byron/monitor-agent/app.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

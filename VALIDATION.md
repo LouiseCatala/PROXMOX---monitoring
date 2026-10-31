@@ -1,0 +1,4 @@
+# SIS 3.5 validation
+Controlled JavaScript tests passed: initial Warning popup; sound enable; Warning popup reopens with audio after a 15-second repeat interval; no immediate reopen before interval; Critical transition; Silence suppresses popup and audio even after the interval; recovery rearms; offline, retrying and stale suppression; expiration closes the popup. DOM and AudioContext were test doubles. Actual Windows browser and speaker playback must be verified on the user laptop. Python parses successfully; JavaScript syntax check passed. Backend, database and default thresholds are unchanged.
+
+SIS 3.6 controlled journal tests passed: Readings default, descending IDs supplied by backend, highlight new visible rows, scroll to top on new arrivals, retain scroll if no new rows, matching CSV links. JavaScript syntax passed. Actual browser/live database deployment still needs user confirmation.

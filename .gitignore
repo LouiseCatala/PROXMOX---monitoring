@@ -1,0 +1,17 @@
+# Local configuration and environments
+.env
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local monitoring data and backups
+monitoring.db
+*.backup
+readings*.csv
+backups/
+backup_*/
+backup_before_postgresql/
+
+# Local system files
+.DS_Store
+Thumbs.db

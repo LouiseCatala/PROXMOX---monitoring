@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The SIS · Monitoring Console</title><link rel="stylesheet" href="/static/dashboard.css?v=sis363">
+<script src="/static/notifications.js?v=sis363" defer></script>
+<script src="/static/alarms.js?v=sis363" defer></script>
+<script src="/static/threshold-settings.js?v=sis363" defer></script>
+<script src="/static/dashboard.js?v=sis363" defer></script></head>
+<body>
+<aside class="rail"><a class="brand" href="/" aria-label="The SIS home"><span class="mark">S<span>↗</span></span><span>THE<br><b>SIS</b></span></a>
+<div class="rail-label">MONITORING CONSOLE</div>
+<a class="nav active" href="#overview"><span>01</span> Overview</a>
+<a class="nav" href="#activity"><span>02</span> Event history</a>
+<div class="rail-bottom"><div class="orb"></div><b>Proxmox lab</b><p>3 configured nodes<br>Sequential operation</p><a href="https://192.168.56.10:8006" target="_blank" rel="noopener">Open Proxmox ↗</a></div></aside>
+<section id="notification-panel" class="notification-panel" aria-label="Alarm notifications" hidden>
+<div class="notification-heading"><div><h2>Notifications</h2><p>Saved alarm events · Philippine time</p></div><button id="close-notifications" aria-label="Close notifications">×</button></div>
+<div class="notification-tools"><button id="mark-all-read">Mark all read</button><button id="clear-notifications">Clear inbox</button></div>
+<p class="notification-help">Unread marks are saved in this browser. Clearing this inbox keeps PostgreSQL history.</p>
+<div id="notification-list" class="notification-list"></div>
+</section><div id="notification-announcement" class="sr-only" role="status" aria-live="polite"></div>
+<dialog id="alarm-popup" aria-labelledby="alarm-popup-title" aria-describedby="alarm-popup-help">
+<div class="alarm-popup-heading"><span id="alarm-popup-level">RESOURCE ALERT</span><button id="close-alarm-popup" type="button" aria-label="Close alert popup">×</button></div>
+<h2 id="alarm-popup-title">Resource threshold reached</h2><p id="alarm-popup-help">Live resource alert. Close dismisses temporarily; popup and sound repeat while the alert remains. Silence stops both until the active severity changes.</p>
+<div id="alarm-popup-items"></div><p id="alarm-popup-audio" role="status"></p>
+<div class="alarm-popup-actions"><button id="popup-enable-sound" type="button">Enable alarm sound</button><button id="popup-silence" type="button">Silence current alarm</button><button id="dismiss-alarm-popup" type="button">Close</button></div>
+</dialog>
+<main>
+<header><div class="eyebrow">THE SIS <span>/</span> RESOURCE MONITORING</div><div class="header-actions"><div class="sync" id="sync">Connecting…</div><button id="settings-toggle" aria-expanded="false" aria-controls="threshold-settings">Settings</button><button id="notification-bell" class="notification-bell" aria-label="Notifications, 0 unread" aria-expanded="false" aria-controls="notification-panel"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span>Notifications</span><b id="notification-count" hidden>0</b></button></div></header>
+<section id="overview"><div class="title-row compact-title"><div><div class="title-with-portraits"><h1>The SIS<span class="title-dot">.</span></h1><div class="title-portraits"><img src="/static/images/byron2x2.jpg" alt="Byron" width="64" height="64"><img src="/static/images/OLC2x2.jpg" alt="Project team member" width="64" height="64"><img src="/static/images/cho2x2.jpg" alt="Project team member" width="64" height="64"></div></div><p class="subtitle" id="mode-label">Live resource monitoring</p></div><small id="clock">Philippine time · UTC+8</small></div><select id="source" hidden aria-label="Data source"><option value="LIVE">LIVE</option></select>
+<div id="notice" class="notice" role="status" hidden></div>
+<div class="summary concise-summary"><div><small>ENDPOINTS REACHABLE</small><strong id="online">— <span>/ 3</span></strong></div><div><small>SAVED READINGS</small><strong id="count">—</strong></div><div><small>CRITICAL METRICS</small><strong id="critical">—</strong></div></div>
+<div class="section-heading"><h2>Node overview</h2><span>CPU / RAM / DISK</span></div>
+<div class="nodes" id="nodes" aria-live="off"><div class="loading">Loading PostgreSQL history…</div></div>
+<div class="legend"><span class="green">● Normal</span><span class="yellow">● Low priority</span><span class="orange">● Warning</span><span class="red">● Critical</span><span>Endpoint failure does not confirm power state.</span></div>
+</section>
+<section id="threshold-settings" class="settings-panel" hidden>
+<h2>Alarm thresholds</h2><p>Applies to live measurements from all three VMs. Save to apply on new checks; historical severity is retained.</p>
+<form id="threshold-form"><div class="table-wrap"><table class="threshold-table"><thead><tr><th>Resource</th><th>Low starts at %</th><th>Warning starts at %</th><th>Critical starts at %</th></tr></thead><tbody>{% for r in ['cpu','ram','disk'] %}<tr><th>{{ r.upper() }}</th>{% for level in ['low','warning','critical'] %}<td><input id="limit-{{ r }}-{{ level }}" aria-label="{{ r.upper() }} {{ level }} threshold" type="number" min="0.1" max="100" step="0.1" required></td>{% endfor %}</tr>{% endfor %}</tbody></table></div><div class="settings-actions"><button id="save-thresholds" type="submit">Save thresholds</button><button id="default-thresholds" type="button">Load official defaults</button></div></form><p id="threshold-message" role="status">Loading saved settings…</p></section>
+<section class="rules-panel" aria-label="Current severity thresholds"><div><h2>Active severity rules</h2><p>Applies to all VMs. Settings saves persist after restart. Offline states remain silent.</p></div><div class="table-wrap"><table><thead><tr><th>Level</th><th>CPU</th><th>RAM</th><th>Disk</th></tr></thead><tbody id="active-rules"></tbody></table></div></section>
+<div class="sound-controls compact-sound"><button type="button" id="enable-sound">Enable alarm sound</button><button type="button" id="ack-alarm">Silence current alarm</button><label>Volume <input id="alarm-volume" type="range" min="0" max="100" value="35"></label></div><p id="alarm-status" role="status">Sound off. Enable alarm sound to hear resource warnings.</p>
+<section id="activity"><div class="section-heading"><h2>Activity journal</h2><span>PHILIPPINE TIME / UTC+8</span></div><div class="journal"><p class="journal-help">Live updates every ~5 seconds · newest checks appear at the top · times in UTC+8. Severity transitions only record changes.</p><p id="journal-live" class="journal-live" role="status" aria-live="polite">LIVE · Waiting for saved readings…</p><div class="tabs" role="tablist"><button id="tab-alerts" role="tab" aria-selected="false" data-tab="alerts">Severity transitions</button><button id="tab-events" role="tab" aria-selected="false" data-tab="events">Availability</button><button id="tab-readings" class="selected" role="tab" aria-selected="true" data-tab="readings">Readings</button><button id="tab-metrics" role="tab" aria-selected="false" data-tab="metrics">Metrics + severity</button></div><div class="record-toolbar"><span id="record-title">Severity transition records</span><a id="record-export" class="record-export" href="/export/alerts?source=LIVE">Download severity CSV ↓</a></div><div class="table-wrap" id="history" role="tabpanel" aria-labelledby="tab-readings"></div></div></section>
+<footer><span>THE SIS <b>·</b> PostgreSQL history</span><span>Build SIS 3.6.3 · 5-second checks · academic lab</span></footer>
+</main></body></html>

@@ -1,0 +1,23 @@
+{
+  "enabled": false,
+  "nodes": {
+    "monitor-node1": {
+      "unavailable": true,
+      "cpu": 1.0,
+      "ram": 90.0,
+      "disk": 95.0
+    },
+    "monitor-node2": {
+      "unavailable": false,
+      "cpu": 90.0,
+      "ram": 90.0,
+      "disk": 95.0
+    },
+    "monitor-node3": {
+      "unavailable": true,
+      "cpu": 50.0,
+      "ram": 75.0,
+      "disk": 70.0
+    }
+  }
+}
